@@ -20,10 +20,10 @@ public class NotesSymbolIdentifier implements IF_SymbolIdentifier {
 			,EN_direction.NorthWest
 			,EN_direction.North
 			,EN_direction.NorthEast};
-	private boolean learnMode = false;
-	private ArrayList<DT_Point> listOfPointsFound_learnMode = null;
-	private double avgXofFoundSymbol_learnMode = 0;
-	private double avgYofFoundSymbol_learnMode = 0;
+	private DT_PointCloud listOfPointsFound = null;
+	private double avgXofFoundSymbol = 0;
+	private double avgYofFoundSymbol = 0;
+	private DT_Point[] extremePointsOfFoundSymbol = new DT_Point[4];
 	
 	public static IF_SymbolIdentifier getInstance(ArrayList<DT_SymbolSimplified> simpleSymbols){
 		NotesSymbolIdentifier instance = new NotesSymbolIdentifier();
@@ -33,25 +33,25 @@ public class NotesSymbolIdentifier implements IF_SymbolIdentifier {
 		return instance;
 	}
 	
-	public void setLearnMode(boolean useInLearnMode){
-		this.learnMode = useInLearnMode;
-	}
-	
-	public ArrayList<DT_Point> getListOfPointsFound_learnMode() {
-		return listOfPointsFound_learnMode;
+	@Override
+	public DT_PointCloud getListOfPointsFound() {
+		return listOfPointsFound;
 	}
 
-	public double getAvgXofFoundSymbol_learnMode() {
-		return avgXofFoundSymbol_learnMode;
+	@Override
+	public double getAvgXofFoundSymbol() {
+		return avgXofFoundSymbol;
 	}
 
-	public double getAvgYofFoundSymbol_learnMode() {
-		return avgYofFoundSymbol_learnMode;
+	@Override
+	public double getAvgYofFoundSymbol() {
+		return avgYofFoundSymbol;
 	}
 	
 	@Override
 	public DT_MusicalSymbol identifySymbol(BufferedImage image, int x, int y) {
 		DT_PointCloud points = findPointsWhichBelongToSymbol(image, x, y);
+		
 		double[] averageXandY = calculateAverageXandY(points);
 		
 		DT_SymbolSimplified matchingSymbol = findMatchingSymbol(averageXandY[0], averageXandY[1]);
@@ -62,11 +62,17 @@ public class NotesSymbolIdentifier implements IF_SymbolIdentifier {
 		}else{
 			identifiedMusicalSymbol = new DT_MusicalSymbol(matchingSymbol.getName());
 		}
-		if(learnMode){
-			this.listOfPointsFound_learnMode = points.getListOfPoints();
-			this.avgXofFoundSymbol_learnMode = averageXandY[0];
-			this.avgYofFoundSymbol_learnMode = averageXandY[1];
-		}
+
+		this.listOfPointsFound = points;
+		this.avgXofFoundSymbol = averageXandY[0];
+		this.avgYofFoundSymbol = averageXandY[1];
+		
+		//Remember rectangle of extreme values of the found points
+		extremePointsOfFoundSymbol[0] = new DT_Point(points.getMinX(), points.getMinY());
+		extremePointsOfFoundSymbol[1] = new DT_Point(points.getMaxX(), points.getMinY());
+		extremePointsOfFoundSymbol[2] = new DT_Point(points.getMaxX(), points.getMaxY());
+		extremePointsOfFoundSymbol[3] = new DT_Point(points.getMinX(), points.getMaxY());
+
 		
 		return identifiedMusicalSymbol;
 	}
@@ -154,6 +160,7 @@ public class NotesSymbolIdentifier implements IF_SymbolIdentifier {
 	
 	private double[] calculateAverageXandY(DT_PointCloud points){
 		int middleX, middleY, sumX = 0, sumY = 0, relativeToMiddleX, relativeToMiddleY;
+		
 		middleX = (points.getMaxX() + points.getMinX()) / 2;
 		
 		middleY = (points.getMaxY() + points.getMinY()) / 2;
@@ -200,6 +207,12 @@ public class NotesSymbolIdentifier implements IF_SymbolIdentifier {
 			}
 		}
 		return foundSymbol;
+	}
+
+	@Override
+	public DT_Point[] getFoundExtremePoints() {
+		// TODO Auto-generated method stub
+		return extremePointsOfFoundSymbol;
 	}
 
 }

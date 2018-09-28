@@ -26,11 +26,11 @@ public class NotesSymbolIdentifierTest {
 	}
 
 	@Test
-	public void testGetListOfPointsFound_learnMode(){ 
+	public void testGetListOfPointsFound(){ 
 		IF_SymbolIdentifier identifier = NotesSymbolIdentifier.getInstance(null);
-		((NotesSymbolIdentifier) identifier).setLearnMode(true);
+
 		try {
-			Field field = NotesSymbolIdentifier.class.getDeclaredField("listOfPointsFound_learnMode");
+			Field field = NotesSymbolIdentifier.class.getDeclaredField("listOfPointsFound");
 			field.setAccessible(true);
 			
 			ArrayList<DT_Point> testPoints = new ArrayList<DT_Point>();
@@ -39,14 +39,14 @@ public class NotesSymbolIdentifierTest {
 			testPoints.add(new DT_Point(3, -1));
 			field.set(identifier, testPoints);
 			
-			ArrayList<DT_Point> resultPoints = ((NotesSymbolIdentifier) identifier).getListOfPointsFound_learnMode();
+			DT_PointCloud resultPoints = ((NotesSymbolIdentifier) identifier).getListOfPointsFound();
 			
-			if(resultPoints.size() != testPoints.size()){
+			if(resultPoints.getListOfPoints().size() != testPoints.size()){
 				fail("Different number of points retrieved");
 			}
 			
-			for(int i=0; i<resultPoints.size(); i++){
-				if(resultPoints.get(i).equals(testPoints.get(i)) == false){
+			for(int i=0; i<resultPoints.getListOfPoints().size(); i++){
+				if(resultPoints.getListOfPoints().get(i).equals(testPoints.get(i)) == false){
 					fail("The list of Points is not equal");
 				}
 			}
@@ -56,17 +56,16 @@ public class NotesSymbolIdentifierTest {
 	}
 
 	@Test
-	public void testGetAvgXofFoundSymbol_learnMode() {
+	public void testGetAvgXofFoundSymbol() {
 		IF_SymbolIdentifier identifier = NotesSymbolIdentifier.getInstance(null);
-		((NotesSymbolIdentifier) identifier).setLearnMode(true);
 		
 		Field field;
 		try {
-			field = NotesSymbolIdentifier.class.getDeclaredField("avgXofFoundSymbol_learnMode");
+			field = NotesSymbolIdentifier.class.getDeclaredField("avgXofFoundSymbol");
 			field.setAccessible(true);
 			double testAvgX = 0.76471;
 			field.set(identifier, testAvgX);
-			double resultAvgX = ((NotesSymbolIdentifier) identifier).getAvgXofFoundSymbol_learnMode();
+			double resultAvgX = ((NotesSymbolIdentifier) identifier).getAvgXofFoundSymbol();
 			
 			if(resultAvgX != testAvgX){
 				fail("Value of returned X average was not expected");
@@ -78,17 +77,16 @@ public class NotesSymbolIdentifierTest {
 	}
 
 	@Test
-	public void testGetAvgYofFoundSymbol_learnMode() {
+	public void testGetAvgYofFoundSymbol() {
 		IF_SymbolIdentifier identifier = NotesSymbolIdentifier.getInstance(null);
-		((NotesSymbolIdentifier) identifier).setLearnMode(true);
 		
 		Field field;
 		try {
-			field = NotesSymbolIdentifier.class.getDeclaredField("avgYofFoundSymbol_learnMode");
+			field = NotesSymbolIdentifier.class.getDeclaredField("avgYofFoundSymbol");
 			field.setAccessible(true);
 			double testAvgY = 0.76471;
 			field.set(identifier, testAvgY);
-			double resultAvgY = ((NotesSymbolIdentifier) identifier).getAvgYofFoundSymbol_learnMode();
+			double resultAvgY = ((NotesSymbolIdentifier) identifier).getAvgYofFoundSymbol();
 			
 			if(resultAvgY != testAvgY){
 				fail("Value of returned Y average was not expected");
